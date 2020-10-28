@@ -19,42 +19,8 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     }
     else // Checking PlayerGuess
     {
-        if (Input == HiddenWord)
-        {
-            PrintLine(TEXT("You have won!"));
-            EndGame();
-        }
-        else
-        {
-            PrintLine(TEXT("Lost a life!"));
-            PrintLine(TEXT("%i"), --Lives);
-            
-            if (Lives > 0) {
-                if (Input.Len() != HiddenWord.Len())
-                {
-                    PrintLine(TEXT("Sorry, try guessing again!\nYou have %i lives remaining."), Lives);
-                }
-            }
-            else {
-                PrintLine(TEXT("You have no lives left!"));
-                EndGame();
-            }
-        }
+        ProcessGuess(Input);
     }
-
-    // Check if isogram
-    // Prompt to Guess Again
-    // Check if right number of characters
-    // Prompt to Guess Again
-
-    // Remove Life
-
-    // Check if Lives > 0
-    // If yes GuessAgain
-    // Show lives left
-    // If no show GameOver and HiddenWord?
-    // Prompt to play again, Press enter to play again?
-    // PlayAgain or Quit
 }
 
 void UBullCowCartridge::SetupGame() // When the player hits enter
@@ -74,5 +40,56 @@ void UBullCowCartridge::SetupGame() // When the player hits enter
 void UBullCowCartridge::EndGame()
 {
     bGameOver = true;
-    PrintLine(TEXT("Press enter to play again."));
+    PrintLine(TEXT("\nPress enter to play again."));
+}
+
+void UBullCowCartridge::ProcessGuess(FString Guess)
+{
+    if (Guess == HiddenWord)
+    {
+        PrintLine(TEXT("You have won!"));
+        EndGame();
+        return;
+    }
+
+    if (Guess.Len() != HiddenWord.Len())
+    {
+        PrintLine(TEXT("The hidden word is %i letters long."), HiddenWord.Len());
+        PrintLine(TEXT("Sorry, try guessing again!\nYou have %i lives remaining."), Lives);
+        return;
+    }
+
+    // Check if Isogram
+    if (!IsIsogram(Guess))
+    {
+        PrintLine(TEXT("No repeating letters, guess again."));
+        return;
+    }
+
+    // Remove Life
+    PrintLine(TEXT("Lost a life!"));
+    --Lives;
+
+    if (Lives <= 0)
+    {
+        ClearScreen();
+        PrintLine(TEXT("You have no lives left!"));
+        PrintLine(TEXT("The hidden word was: %s"), *HiddenWord);
+        EndGame();
+        return;
+    }
+
+    // show the player Bulls and Cows
+    PrintLine(TEXT("Guess again, you have %i lives left."), Lives);
+}
+
+bool UBullCowCartridge::IsIsogram(FString Word) const
+{
+    // For each letter.
+    // Start at element [0].
+    // Compare against the next letter.
+    // Until we reach [Word.len() - 1]
+    // if any are the same return false
+
+    return true;
 }
